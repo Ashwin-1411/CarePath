@@ -1,0 +1,185 @@
+// Example test requests for CarePath AI backend
+// Save this file and use with VS Code REST Client extension or Postman
+
+### Health Check
+GET http://localhost:3000/health
+
+### ========================================
+### DOCUMENT PROCESSING WORKFLOW
+### ========================================
+
+### 1. Process Discharge Text (Simplified Example)
+POST http://localhost:3000/api/documents/process-text
+Content-Type: application/json
+
+{
+  "discharge_text": "DISCHARGE SUMMARY\n\nPatient: John Doe, Age 65\n\nDISCHARGE MEDICATIONS:\n1. Aspirin 81mg - Take once daily by mouth\n2. Metoprolol 25mg - Take twice daily by mouth\n3. Atorvastatin 40mg - Take once daily at bedtime\n\nFOLLOW-UP INSTRUCTIONS:\n- Cardiology appointment in 2 weeks\n- Primary care physician within 1 week\n\nWARNING SIGNS:\n- Call 911 immediately if you experience chest pain lasting more than 5 minutes\n- Call your doctor if you feel dizzy or lightheaded\n- Contact your doctor if you have unexplained shortness of breath\n\nACTIVITY RESTRICTIONS:\n- No heavy lifting (more than 10 pounds) for 2 weeks\n- No driving for 1 week\n- Walk 10-15 minutes daily, gradually increasing\n\nDIET:\n- Low sodium diet (less than 2000mg per day)\n- Avoid high-fat foods",
+  "patient_context": {
+    "patient_id": "TEST-001",
+    "age": 65,
+    "has_chronic_conditions": true,
+    "literacy_level": "medium",
+    "lives_alone": false,
+    "has_caregiver": true
+  }
+}
+
+### 2. Process Discharge Text (Minimal Example)
+POST http://localhost:3000/api/documents/process-text
+Content-Type: application/json
+
+{
+  "discharge_text": "MEDICATIONS: Aspirin 81mg daily. FOLLOW-UP: Cardiology in 2 weeks. WARNING: Call 911 for chest pain.",
+  "patient_context": {
+    "patient_id": "TEST-002",
+    "literacy_level": "low"
+  }
+}
+
+### ========================================
+### PATIENT MANAGEMENT
+### ========================================
+
+### 3. Register New Patient
+POST http://localhost:3000/api/patients
+Content-Type: application/json
+
+{
+  "patient_id": "PT-12345",
+  "name": "Jane Smith",
+  "age": 72,
+  "chronic_conditions": true,
+  "literacy_level": "high"
+}
+
+### 4. Get Patient Info
+GET http://localhost:3000/api/patients/TEST-001
+
+### 5. Get Patient Care Plan
+GET http://localhost:3000/api/patients/TEST-001/care-plan
+
+### ========================================
+### ADHERENCE MONITORING WORKFLOW
+### ========================================
+
+### 6. Submit Daily Check-In (All Medications Taken)
+POST http://localhost:3000/api/adherence/check-in
+Content-Type: application/json
+
+{
+  "patient_id": "TEST-001",
+  "check_in_data": {
+    "date": "2024-12-17",
+    "medications": [
+      {
+        "name": "Aspirin",
+        "taken": true
+      },
+      {
+        "name": "Metoprolol",
+        "taken": true
+      },
+      {
+        "name": "Atorvastatin",
+        "taken": true
+      }
+    ],
+    "restrictions": [
+      {
+        "description": "No heavy lifting",
+        "followed": true
+      },
+      {
+        "description": "No driving",
+        "followed": true
+      }
+    ],
+    "patient_notes": "Feeling good, all medications taken on time"
+  }
+}
+
+### 7. Submit Check-In (Some Medications Missed)
+POST http://localhost:3000/api/adherence/check-in
+Content-Type: application/json
+
+{
+  "patient_id": "TEST-001",
+  "check_in_data": {
+    "date": "2024-12-18",
+    "medications": [
+      {
+        "name": "Aspirin",
+        "taken": true
+      },
+      {
+        "name": "Metoprolol",
+        "taken": false
+      },
+      {
+        "name": "Atorvastatin",
+        "taken": false
+      }
+    ],
+    "patient_notes": "Forgot evening medications, was at dinner"
+  }
+}
+
+### 8. Get Adherence History (Last 7 Days)
+GET http://localhost:3000/api/adherence/history/TEST-001?days=7
+
+### 9. Get Adherence History (Last 30 Days)
+GET http://localhost:3000/api/adherence/history/TEST-001?days=30
+
+### 10. Get Current Adherence Status
+GET http://localhost:3000/api/adherence/status/TEST-001
+
+### ========================================
+### COMPLEX DISCHARGE EXAMPLE
+### ========================================
+
+### 11. Process Complex Cardiac Discharge
+POST http://localhost:3000/api/documents/process-text
+Content-Type: application/json
+
+{
+  "discharge_text": "DISCHARGE SUMMARY - CARDIAC CATHETERIZATION WITH STENT PLACEMENT\n\nPatient: Robert Johnson, 68 years old\nProcedure Date: December 15, 2024\n\nDISCHARGE MEDICATIONS:\n1. Aspirin 81mg - Take 1 tablet by mouth once daily\n   CRITICAL: Do not stop taking this medication without consulting your cardiologist\n\n2. Clopidogrel (Plavix) 75mg - Take 1 tablet by mouth once daily\n   CRITICAL: This prevents blood clots in your stent. Do not stop without doctor approval.\n\n3. Metoprolol 25mg - Take 1 tablet by mouth twice daily (morning and evening)\n   For: Heart rate and blood pressure control\n\n4. Atorvastatin 40mg - Take 1 tablet by mouth once daily at bedtime\n   For: Cholesterol management\n\n5. Lisinopril 10mg - Take 1 tablet by mouth once daily in the morning\n   For: Blood pressure control\n\nFOLLOW-UP APPOINTMENTS:\n- Cardiology follow-up in 2 weeks (CRITICAL - must attend)\n- Primary care physician within 1 week for medication review\n- Cardiac rehabilitation program starting in 3 weeks\n\nWARNING SIGNS - CALL 911 IMMEDIATELY IF:\n- Chest pain or pressure lasting more than 5 minutes\n- Severe shortness of breath\n- Loss of consciousness or fainting\n- Rapid or irregular heartbeat with chest discomfort\n\nWARNING SIGNS - CALL YOUR DOCTOR SAME DAY IF:\n- Mild chest discomfort\n- Unusual fatigue or weakness\n- Swelling in legs or feet\n- Dizziness when standing\n- Any bleeding or bruising\n\nACTIVITY RESTRICTIONS (for 2 weeks):\n- No heavy lifting (nothing heavier than 10 pounds)\n- No strenuous exercise\n- No driving for 1 week\n- Avoid pushing, pulling, or straining\n- Walk 10-15 minutes daily, gradually increase\n\nDIET INSTRUCTIONS:\n- Heart-healthy diet (Mediterranean or DASH diet recommended)\n- Low sodium (less than 2000mg per day)\n- Limit saturated fats\n- Increase fruits, vegetables, whole grains\n- Limit alcohol to no more than 1 drink per day\n\nOTHER INSTRUCTIONS:\n- Take all medications exactly as prescribed\n- Keep catheterization site clean and dry for 48 hours\n- Report any redness, swelling, or drainage from catheterization site\n- Monitor blood pressure daily and record\n- Attend cardiac rehabilitation when approved",
+  "patient_context": {
+    "patient_id": "CARDIAC-001",
+    "age": 68,
+    "has_chronic_conditions": true,
+    "literacy_level": "medium",
+    "lives_alone": true,
+    "has_caregiver": false
+  }
+}
+
+### ========================================
+### ERROR TESTING
+### ========================================
+
+### 12. Test Empty Discharge Text (Should Fail)
+POST http://localhost:3000/api/documents/process-text
+Content-Type: application/json
+
+{
+  "discharge_text": "",
+  "patient_context": {
+    "patient_id": "ERROR-TEST-001"
+  }
+}
+
+### 13. Test Missing Patient ID in Check-In (Should Fail)
+POST http://localhost:3000/api/adherence/check-in
+Content-Type: application/json
+
+{
+  "check_in_data": {
+    "medications": []
+  }
+}
+
+### 14. Test Non-Existent Patient
+GET http://localhost:3000/api/patients/DOES-NOT-EXIST
+
+### 15. Test Non-Existent Care Plan
+GET http://localhost:3000/api/patients/NEW-PATIENT-NO-DISCHARGE/care-plan
