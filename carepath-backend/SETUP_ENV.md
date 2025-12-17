@@ -11,7 +11,7 @@ Before starting the backend, you need to create a `.env` file with your Gemini A
 2. **Create `.env` file** in this directory with:
 
 ```env
-GEMINI_API_KEY=AIzaSyClj3PSkitZ_0rMiNiE7ODQNc4z2fmG984
+GEMINI_API_KEY=YOUR_API_KEY
 PORT=3000
 NODE_ENV=development
 MAX_REQUESTS_PER_MINUTE=15
